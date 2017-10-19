@@ -337,6 +337,19 @@
             <artifactId>spring-security-data</artifactId>
         </dependency>
         <!-- jhipster-needle-maven-add-dependency -->
+        <!-- IPFS Client -->
+        <dependency>
+            <groupId>com.github.ipfs</groupId>
+            <artifactId>java-ipfs-api</artifactId>
+            <version>v1.1.1</version>
+        </dependency>
+        <!-- Bouncy Castle Crypto -->
+        <!-- https://mvnrepository.com/artifact/org.bouncycastle/bcprov-jdk15on -->
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk15on</artifactId>
+            <version>1.58</version>
+        </dependency>
     </dependencies>
     <build>
         <defaultGoal>spring-boot:run</defaultGoal>
@@ -945,6 +958,7 @@
                 </dependency>
             </dependencies>
         </profile>
+        
         <profile>
             <!--
                 Profile for applying IDE-specific configuration.
@@ -961,4 +975,11 @@
             </dependencies>
         </profile>
     </profiles>
+    <repositories>
+		<repository>
+		    <id>jitpack.io</id>
+		    <url>https://jitpack.io</url>
+		</repository>
+	</repositories>
+
 </project>
