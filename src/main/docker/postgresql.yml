@@ -1,0 +1,11 @@
+version: '2'
+services:
+    rome-postgresql:
+        image: postgres:9.6.5
+        # volumes:
+        #     - ~/volumes/jhipster/rome/postgresql/:/var/lib/postgresql/data/
+        environment:
+            - POSTGRES_USER=rome
+            - POSTGRES_PASSWORD=
+        ports:
+            - 5432:5432

@@ -1,0 +1,39 @@
+{
+  "generator-jhipster": {
+    "promptValues": {
+      "packageName": "com.ippon.rome",
+      "nativeLanguage": "en"
+    },
+    "jhipsterVersion": "4.10.0",
+    "baseName": "rome",
+    "packageName": "com.ippon.rome",
+    "packageFolder": "com/ippon/rome",
+    "serverPort": "8080",
+    "authenticationType": "jwt",
+    "hibernateCache": "no",
+    "clusteredHttpSession": false,
+    "websocket": false,
+    "databaseType": "sql",
+    "devDatabaseType": "postgresql",
+    "prodDatabaseType": "postgresql",
+    "searchEngine": false,
+    "messageBroker": false,
+    "serviceDiscoveryType": false,
+    "buildTool": "maven",
+    "enableSocialSignIn": false,
+    "enableSwaggerCodegen": false,
+    "jwtSecretKey": "134c61150bd801ab151dde1f553b7ca85e8c9279",
+    "clientFramework": "angularX",
+    "useSass": false,
+    "clientPackageManager": "yarn",
+    "applicationType": "monolith",
+    "testFrameworks": [],
+    "jhiPrefix": "jhi",
+    "enableTranslation": true,
+    "nativeLanguage": "en",
+    "languages": [
+      "en",
+      "fr"
+    ]
+  }
+}
