@@ -114,7 +114,7 @@ public class Reference {
         this.key = key;
     }
 
-    public Reference(BufferedInputStream file) throws IOException {
+    public Reference(BufferedInputStream file) throws Exception {
         EncryptionDTO dto = null;
         try {
             dto = FileProcessor.encrypt(file);
@@ -126,6 +126,7 @@ public class Reference {
         MerkleNode mn = ipfs.add(nstream);
         this.hash = mn.hash.toBase58();
         this.key = dto.keyBytes;
+        setFileRow(null, this.hash, this.key);
     }
 
     public String getHash() {
