@@ -9,11 +9,20 @@ public class Reference {
     private String key;
 
     public Reference(String hash, String key){
-
+        this.hash = hash;
+        this.key = key;
     }
 
     public Reference(BufferedInputStream file){
 
+    }
+
+    public String getHash() {
+        return hash;
+    }
+
+    public String getKey() {
+        return key;
     }
 
     public BufferedOutputStream getData(){
