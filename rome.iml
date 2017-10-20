@@ -11,6 +11,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="Maven: org.xerial:sqlite-jdbc:3.20.1" level="project" />
     <orderEntry type="library" name="Maven: com.github.ipfs:java-ipfs-api:v1.1.1" level="project" />
     <orderEntry type="library" name="Maven: com.github.multiformats:java-multiaddr:v1.1.1" level="project" />
     <orderEntry type="library" name="Maven: com.github.multiformats:java-multibase:v1.0.0" level="project" />

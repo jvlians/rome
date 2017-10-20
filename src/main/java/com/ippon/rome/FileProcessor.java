@@ -17,7 +17,7 @@ public class FileProcessor {
 
     // Encrypt data from the BufferedInputStream given the SecretKeySpec + IvParameterSpec combo.
     // Return a DTO with the encrypted data and the key bytes (SecretKeySpec + IvParameterSpec)
-    public EncryptionDTO encrypt(BufferedInputStream input, byte[] keyBytes) throws NoSuchPaddingException, NoSuchAlgorithmException, NoSuchProviderException, InvalidKeyException, IOException, InvalidAlgorithmParameterException {
+    public EncryptionDTO encrypt(BufferedInputStream input, byte[] keyBytes) throws Exception {
         // Resolve Key from keyBytes
         Key key = new SecretKeySpec(keyBytes, numIVBytes, keyBytes.length-numIVBytes, "AES");
 
@@ -29,12 +29,13 @@ public class FileProcessor {
         byte[] enc = cipher.doFinal();
 
         // Return populated DTO
-        return new EncryptionDTO(keyBytes, enc);
+//        return new EncryptionDTO(keyBytes, enc);
+        return null;
     }
 
     // Encrypt data from the BufferedInputStream given no key information.
     // Return a DTO with the encrypted data and the key bytes (SecretKeySpec + IvParameterSpec)
-    public EncryptionDTO encrypt(BufferedInputStream input) throws NoSuchPaddingException, NoSuchAlgorithmException, NoSuchProviderException, InvalidKeyException, IOException, InvalidAlgorithmParameterException {
+    public EncryptionDTO encrypt(BufferedInputStream input) throws Exception {
         // Generate key / IV pair to be used.
         byte[] keyBytes = KeyGenerator.getInstance("AES").generateKey().getEncoded();
         byte[] ivBytes = new byte[numIVBytes];
@@ -59,11 +60,12 @@ public class FileProcessor {
         byte[] enc = cipher.doFinal();
 
         // Return populated DTO
-        return new EncryptionDTO(pair, enc);
+//        return new EncryptionDTO(pair, enc);
+        return null;
     }
 
     // Decrypt data from
-    public BufferedOutputStream decrypt(byte[] keyBytes, byte[] encrypted) throws NoSuchPaddingException, NoSuchAlgorithmException, NoSuchProviderException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException, InvalidAlgorithmParameterException {
+    public BufferedOutputStream decrypt(byte[] keyBytes, byte[] encrypted) throws Exception {
         // Resolve Key from keyBytes
         Key key = new SecretKeySpec(keyBytes, numIVBytes, keyBytes.length-numIVBytes, "AES");
 
@@ -75,6 +77,6 @@ public class FileProcessor {
         byte[] dec = cipher.doFinal(encrypted);
 
         // Return decrypted data as BufferedOutputStream
-        return new BufferedOutputStream;
+        return null;
     }
 }
