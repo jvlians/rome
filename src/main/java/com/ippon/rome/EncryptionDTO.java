@@ -1,15 +1,15 @@
 package com.ippon.rome;
 
-import java.io.BufferedOutputStream;
+import java.io.InputStream;
 
 /**
  * Created by slaughter.
  */
 public class EncryptionDTO {
     byte[] keyBytes;
-    BufferedOutputStream encrypted;
+    InputStream encrypted;
 
-    public EncryptionDTO(byte[] keyBytes, BufferedOutputStream encrypted) {
+    public EncryptionDTO(byte[] keyBytes, InputStream encrypted) {
         this.keyBytes = keyBytes;
         this.encrypted = encrypted;
     }
@@ -22,11 +22,11 @@ public class EncryptionDTO {
         this.keyBytes = keyBytes;
     }
 
-    public BufferedOutputStream getEncrypted() {
+    public InputStream getEncrypted() {
         return encrypted;
     }
 
-    public void setEncrypted(BufferedOutputStream encrypted) {
+    public void setEncrypted(InputStream encrypted) {
         this.encrypted = encrypted;
     }
 }

@@ -13,11 +13,11 @@ public class FileProcessor {
     // NOTE: IV precedes key. First 16 bytes of keyBytes should be IV.
     // Remaining should all be key.
     // TODO: Determine length of key in keyBytes, make static.
-    int numIVBytes = 16;
+    static int numIVBytes = 16;
 
     // Encrypt data from the BufferedInputStream given the SecretKeySpec + IvParameterSpec combo.
     // Return a DTO with the encrypted data and the key bytes (SecretKeySpec + IvParameterSpec)
-    public EncryptionDTO encrypt(BufferedInputStream input, byte[] keyBytes) throws Exception {
+    public static EncryptionDTO encrypt(BufferedInputStream input, byte[] keyBytes) throws Exception {
         // Resolve Key from keyBytes
         Key key = new SecretKeySpec(keyBytes, numIVBytes, keyBytes.length-numIVBytes, "AES");
 
@@ -25,17 +25,13 @@ public class FileProcessor {
         Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding", "BC");
         cipher.init(Cipher.ENCRYPT_MODE, key, new IvParameterSpec(keyBytes, 0, numIVBytes));
 
-        // Encrypt
-        byte[] enc = cipher.doFinal();
-
         // Return populated DTO
-//        return new EncryptionDTO(keyBytes, enc);
-        return null;
+        return new EncryptionDTO(keyBytes, new CipherInputStream(input, cipher));
     }
 
     // Encrypt data from the BufferedInputStream given no key information.
     // Return a DTO with the encrypted data and the key bytes (SecretKeySpec + IvParameterSpec)
-    public EncryptionDTO encrypt(BufferedInputStream input) throws Exception {
+    public static EncryptionDTO encrypt(BufferedInputStream input) throws Exception {
         // Generate key / IV pair to be used.
         byte[] keyBytes = KeyGenerator.getInstance("AES").generateKey().getEncoded();
         byte[] ivBytes = new byte[numIVBytes];
@@ -56,16 +52,12 @@ public class FileProcessor {
         Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding", "BC");
         cipher.init(Cipher.ENCRYPT_MODE, key, new IvParameterSpec(ivBytes));
 
-        // Encrypt
-        byte[] enc = cipher.doFinal();
-
-        // Return populated DTO
-//        return new EncryptionDTO(pair, enc);
-        return null;
+        // Encrypt and return populated DTO
+        return new EncryptionDTO(pair, new CipherInputStream(input, cipher));
     }
 
     // Decrypt data from
-    public BufferedOutputStream decrypt(byte[] keyBytes, byte[] encrypted) throws Exception {
+    public static InputStream decrypt(byte[] keyBytes, byte[] encrypted) throws Exception {
         // Resolve Key from keyBytes
         Key key = new SecretKeySpec(keyBytes, numIVBytes, keyBytes.length-numIVBytes, "AES");
 
@@ -74,7 +66,7 @@ public class FileProcessor {
         cipher.init(Cipher.DECRYPT_MODE, key, new IvParameterSpec(keyBytes, 0, numIVBytes));
 
         // Decrypt
-        byte[] dec = cipher.doFinal(encrypted);
+//        byte[] dec = cipher.doFinal(encrypted);
 
         // Return decrypted data as BufferedOutputStream
         return null;
