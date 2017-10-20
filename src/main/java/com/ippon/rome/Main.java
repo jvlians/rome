@@ -1,5 +1,6 @@
 package com.ippon.rome;
 
+import com.sun.glass.ui.Window;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -8,7 +9,11 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BorderPane;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+
+import java.io.*;
+import java.nio.file.StandardCopyOption;
 
 public class Main extends Application {
 
@@ -69,7 +74,24 @@ public class Main extends Application {
                         if(!empty) {
                             btn.setOnAction(event -> {
                                 Reference ref = getTableView().getItems().get(getIndex());
+                                FileChooser fileChooser = new FileChooser();
+                                fileChooser.setTitle("Choose Decrypted File Location");
+                                File targetFile = fileChooser.showSaveDialog(primaryStage);
+                                if(targetFile != null){
+                                    try {
+                                        OutputStream outputStream = new FileOutputStream(targetFile);
+                                        InputStream inputStream = ref.getData();
+                                        java.nio.file.Files.copy(
+                                                inputStream,
+                                                targetFile.toPath(),
+                                                StandardCopyOption.REPLACE_EXISTING);
+                                        outputStream.close();
+                                        inputStream.close();
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
 
+                                }
                             });
                             setGraphic(btn);
                             setAlignment(Pos.BASELINE_CENTER);
@@ -85,7 +107,24 @@ public class Main extends Application {
 
         borderPane = new BorderPane();
         borderPane.setCenter(fileList);
-        borderPane.setBottom(new Button("Add File"));
+
+        Button addFileButton = new Button("Add File");
+        addFileButton.setOnAction(event -> {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Choose File for Upload");
+            File selectedFile = fileChooser.showOpenDialog(primaryStage);
+            if(selectedFile != null) {
+                try {
+                    BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream(selectedFile));
+                    data.addAll(new Reference(inputStream));
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
+
+        });
+
+        borderPane.setBottom(addFileButton);
 
         Scene scene = new Scene(borderPane);
         primaryStage.setTitle("Example IPFS Encryption/Decryption");

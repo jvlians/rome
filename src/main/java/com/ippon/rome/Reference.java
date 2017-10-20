@@ -3,6 +3,7 @@ package com.ippon.rome;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.InputStream;
 import java.sql.*;
 
 public class Reference {
@@ -106,7 +107,7 @@ public class Reference {
     }
 
 
-    public BufferedOutputStream getData(){
+    public InputStream getData(){
         return null;
     }
 
