@@ -57,7 +57,7 @@ public class FileProcessor {
     }
 
     // Decrypt data from
-    public static InputStream decrypt(byte[] keyBytes, byte[] encrypted) throws Exception {
+    public static InputStream decrypt(byte[] keyBytes, BufferedInputStream encrypted) throws Exception {
         // Resolve Key from keyBytes
         Key key = new SecretKeySpec(keyBytes, numIVBytes, keyBytes.length-numIVBytes, "AES");
 
@@ -65,10 +65,7 @@ public class FileProcessor {
         Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding", "BC");
         cipher.init(Cipher.DECRYPT_MODE, key, new IvParameterSpec(keyBytes, 0, numIVBytes));
 
-        // Decrypt
-//        byte[] dec = cipher.doFinal(encrypted);
-
         // Return decrypted data as BufferedOutputStream
-        return null;
+        return new CipherInputStream(encrypted, cipher);
     }
 }
