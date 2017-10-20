@@ -1,10 +1,18 @@
 package com.ippon.rome;
 
+import io.ipfs.api.IPFS;
+import io.ipfs.api.MerkleNode;
+import io.ipfs.api.NamedStreamable;
+import io.ipfs.multihash.Multihash;
+
 import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.sql.*;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 public class Reference {
     static Connection conn = null;
@@ -12,8 +20,9 @@ public class Reference {
     static PreparedStatement getid = null, gethash = null;
     private String hash;
     private byte[] key;
-
+    static IPFS ipfs;
     static {
+        ipfs = new IPFS("/ip4/127.0.0.1/tcp/5001");
         String path = System.getProperty("user.home") + File.separator + ".rome.db";
         System.out.println(path);
         // create a database connection
@@ -33,7 +42,7 @@ public class Reference {
             last = conn.prepareStatement("select last_insert_rowid();");
             getid = conn.prepareStatement("select * from files where id = ?;");
             gethash = conn.prepareStatement("select * from files where hash = ?;");
-            //System.out.println("lol "+setFileRow(null, "wot???", new byte[]{1,2,3}));
+            //System.out.println("file "+setFileRow(null, "hash", new byte[]{1,2,3}));
             ResultSet rs = s.executeQuery("select * from files");
             while(rs.next()) {
                 // read the result set
@@ -98,16 +107,32 @@ public class Reference {
         this.key = key;
     }
 
-    public Reference(BufferedInputStream file){
+    public Reference(BufferedInputStream file) throws IOException {
+        EncryptionDTO dto = null;
+        try {
+            dto = FileProcessor.encrypt(file);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        RefStream nstream = new RefStream(file, UUID.randomUUID().toString());
 
+        MerkleNode mn = ipfs.add(nstream);
+        this.hash = mn.hash.toBase58();
+        this.key = dto.keyBytes;
     }
 
     public String getHash() {
         return hash;
     }
 
-
-    public InputStream getData(){
+    public InputStream getData() throws IOException {
+        InputStream stream = ipfs.catStream(Multihash.fromBase58(this.hash));
+        EncryptionDTO dto = new EncryptionDTO(key, stream);
+        try {
+            return FileProcessor.decrypt(dto);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return null;
     }
 
@@ -118,5 +143,33 @@ public class Reference {
     public Reference getPreviousVersion(){
         //Return null if does not exist
         return null;
+    }
+}
+class RefStream implements NamedStreamable {
+    InputStream stream;
+    String name;
+
+    public RefStream(InputStream stream, String name) {
+        this.stream = stream; this.name = name;
+    }
+
+    @Override
+    public InputStream getInputStream() throws IOException {
+        return stream;
+    }
+
+    @Override
+    public Optional<String> getName() {
+        return Optional.ofNullable(name);
+    }
+
+    @Override
+    public List<NamedStreamable> getChildren() {
+        return null;
+    }
+
+    @Override
+    public boolean isDirectory() {
+        return false;
     }
 }
