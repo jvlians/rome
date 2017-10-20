@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module org.jetbrains.idea.maven.project.MavenProjectsManager.isMavenModule="true" type="JAVA_MODULE" version="4">
-  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_8" inherit-compiler-output="false">
+  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_8">
     <output url="file://$MODULE_DIR$/target/classes" />
     <output-test url="file://$MODULE_DIR$/target/test-classes" />
     <content url="file://$MODULE_DIR$">
@@ -11,7 +11,6 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="Maven: org.xerial:sqlite-jdbc:3.20.1" level="project" />
     <orderEntry type="library" name="Maven: com.github.ipfs:java-ipfs-api:v1.1.1" level="project" />
     <orderEntry type="library" name="Maven: com.github.multiformats:java-multiaddr:v1.1.1" level="project" />
     <orderEntry type="library" name="Maven: com.github.multiformats:java-multibase:v1.0.0" level="project" />
@@ -19,5 +18,6 @@
     <orderEntry type="library" name="Maven: com.github.ipld:java-cid:v1.1.0" level="project" />
     <orderEntry type="library" name="Maven: org.bouncycastle:bcprov-jdk15on:1.58" level="project" />
     <orderEntry type="library" name="Maven: org.xerial:sqlite-jdbc:3.20.1" level="project" />
+    <orderEntry type="library" exported="" scope="RUNTIME" name="ipfs" level="project" />
   </component>
 </module>

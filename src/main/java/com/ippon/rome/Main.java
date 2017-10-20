@@ -19,13 +19,7 @@ public class Main extends Application {
 
     private final TableView<Reference> table = new TableView<>();
     private final ObservableList<Reference> data
-            = FXCollections.observableArrayList(
-            new Reference("Jacob", new byte[1]),
-            new Reference("Isabella", new byte[1]),
-            new Reference("Ethan", new byte[1]),
-            new Reference("Emma", new byte[1]),
-            new Reference("Michael", new byte[1])
-    );
+            = FXCollections.observableArrayList();
 
     private BorderPane borderPane;
 
@@ -37,6 +31,7 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
+        data.addAll(Reference.getIndex());
         primaryStage.setWidth(400);
         primaryStage.setHeight(600);
 
@@ -117,7 +112,7 @@ public class Main extends Application {
                 try {
                     BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream(selectedFile));
                     data.addAll(new Reference(inputStream));
-                } catch (FileNotFoundException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
