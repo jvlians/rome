@@ -1,5 +1,7 @@
 package com.ippon.rome;
 
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+
 import javax.crypto.*;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
@@ -18,6 +20,7 @@ public class FileProcessor {
     // Encrypt data from the BufferedInputStream given the SecretKeySpec + IvParameterSpec combo.
     // Return a DTO with the encrypted data and the key bytes (SecretKeySpec + IvParameterSpec)
     public static EncryptionDTO encrypt(BufferedInputStream input, byte[] keyBytes) throws Exception {
+        Security.addProvider(new BouncyCastleProvider());
         // Resolve Key from keyBytes
         Key key = new SecretKeySpec(keyBytes, numIVBytes, keyBytes.length-numIVBytes, "AES");
 
@@ -32,6 +35,7 @@ public class FileProcessor {
     // Encrypt data from the BufferedInputStream given no key information.
     // Return a DTO with the encrypted data and the key bytes (SecretKeySpec + IvParameterSpec)
     public static EncryptionDTO encrypt(BufferedInputStream input) throws Exception {
+        Security.addProvider(new BouncyCastleProvider());
         // Generate key / IV pair to be used.
         byte[] keyBytes = KeyGenerator.getInstance("AES").generateKey().getEncoded();
         byte[] ivBytes = new byte[numIVBytes];
@@ -58,6 +62,7 @@ public class FileProcessor {
 
     // Decrypt data from
     public static InputStream decrypt(byte[] keyBytes, BufferedInputStream encrypted) throws Exception {
+        Security.addProvider(new BouncyCastleProvider());
         // Resolve Key from keyBytes
         Key key = new SecretKeySpec(keyBytes, numIVBytes, keyBytes.length-numIVBytes, "AES");
 
