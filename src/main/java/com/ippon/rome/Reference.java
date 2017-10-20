@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -17,7 +18,7 @@ import java.util.UUID;
 public class Reference {
     static Connection conn = null;
     static PreparedStatement insert = null, update = null, last = null;
-    static PreparedStatement getid = null, gethash = null;
+    static PreparedStatement getid = null, gethash = null, index = null;
     private String hash;
     private byte[] key;
     static IPFS ipfs;
@@ -42,17 +43,9 @@ public class Reference {
             last = conn.prepareStatement("select last_insert_rowid();");
             getid = conn.prepareStatement("select * from files where id = ?;");
             gethash = conn.prepareStatement("select * from files where hash = ?;");
+            index = conn.prepareStatement("select * from files;");
             //System.out.println("file "+setFileRow(null, "hash", new byte[]{1,2,3}));
-            ResultSet rs = s.executeQuery("select * from files");
-            while(rs.next()) {
-                // read the result set
-                System.out.println("id   = " + rs.getInt("id"));
-                System.out.println("hash = " + rs.getString("hash"));
-                byte[] key = rs.getBytes("key");
-                String keyStr = toHex(key);
-                System.out.println("key  = " + keyStr);
-                System.out.println();
-            }
+            getIndex();
         } catch (SQLException e) {
             e.printStackTrace();
             System.err.println(e.toString());
@@ -97,7 +90,21 @@ public class Reference {
         gethash.setString(1, hash);
         return new Reference(gethash.executeQuery());
     }
-
+    static List<Reference> getIndex() throws SQLException {
+        ArrayList<Reference> list = new ArrayList<>();
+        ResultSet rs = index.executeQuery();
+        while(rs.next()) {
+            Reference r = new Reference(rs.getString("hash"),
+                    rs.getBytes("key"));
+            list.add(r);
+            // read the result set
+            System.out.println("id   = " + rs.getInt("id"));
+            System.out.println("hash = " + r.hash);
+            System.out.println("key  = " + toHex(r.key));
+            System.out.println();
+        }
+        return list;
+    }
     private Reference(ResultSet set) throws SQLException {
         this(set.getString("hash"), set.getBytes("key"));
     }
