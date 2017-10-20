@@ -17,7 +17,10 @@ public class Main extends Application {
     }
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ClassNotFoundException {
+        Class.forName("org.sqlite.JDBC");
+        Class.forName("com.ippon.rome.Reference");
+
         launch(args);
     }
 }
