@@ -121,7 +121,7 @@ public class Reference {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        RefStream nstream = new RefStream(file, UUID.randomUUID().toString());
+        RefStream nstream = new RefStream(dto.encrypted, UUID.randomUUID().toString());
 
         MerkleNode mn = ipfs.add(nstream);
         this.hash = mn.hash.toBase58();
