@@ -68,4 +68,17 @@ public class FileProcessor {
         // Return decrypted data as BufferedOutputStream
         return new CipherInputStream(encrypted, cipher);
     }
+
+    // Decrypt data from
+    public static InputStream decrypt(EncryptionDTO encDTO) throws Exception {
+        // Resolve Key from keyBytes
+        Key key = new SecretKeySpec(encDTO.getKeyBytes(), numIVBytes, encDTO.getKeyBytes().length-numIVBytes, "AES");
+
+        // Prepare Cipher with IV
+        Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding", "BC");
+        cipher.init(Cipher.DECRYPT_MODE, key, new IvParameterSpec(encDTO.getKeyBytes(), 0, numIVBytes));
+
+        // Return decrypted data as BufferedOutputStream
+        return new CipherInputStream(encDTO.getEncrypted(), cipher);
+    }
 }
