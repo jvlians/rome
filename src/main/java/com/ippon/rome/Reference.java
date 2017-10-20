@@ -93,12 +93,18 @@ public class Reference {
     }
 
     public Reference(String hash, byte[] key){
-
+        this.hash = hash;
+        this.key = key;
     }
 
     public Reference(BufferedInputStream file){
 
     }
+
+    public String getHash() {
+        return hash;
+    }
+
 
     public BufferedOutputStream getData(){
         return null;
