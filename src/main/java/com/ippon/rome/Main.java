@@ -1,31 +1,25 @@
 package com.ippon.rome;
 
 import javafx.application.Application;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import javafx.util.Callback;
-
-import java.util.Observable;
 
 public class Main extends Application {
 
     private final TableView<Reference> table = new TableView<>();
     private final ObservableList<Reference> data
             = FXCollections.observableArrayList(
-            new Reference("Jacob", "Smith"),
-            new Reference("Isabella", "Johnson"),
-            new Reference("Ethan", "Williams"),
-            new Reference("Emma", "Jones"),
-            new Reference("Michael", "Brown")
+            new Reference("Jacob", new byte[1]),
+            new Reference("Isabella", new byte[1]),
+            new Reference("Ethan", new byte[1]),
+            new Reference("Emma", new byte[1]),
+            new Reference("Michael", new byte[1])
     );
 
     private BorderPane borderPane;
@@ -101,7 +95,10 @@ public class Main extends Application {
     }
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ClassNotFoundException {
+        Class.forName("org.sqlite.JDBC");
+        Class.forName("com.ippon.rome.Reference");
+
         launch(args);
     }
 }

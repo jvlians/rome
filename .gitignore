@@ -1,4 +1,5 @@
 out/
-.idea/
 .DS_Store
 target/
+lib/
+.idea/
