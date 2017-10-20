@@ -117,7 +117,7 @@ public class Main extends Application {
                 try {
                     BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream(selectedFile));
                     data.addAll(new Reference(inputStream));
-                } catch (FileNotFoundException e) {
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
