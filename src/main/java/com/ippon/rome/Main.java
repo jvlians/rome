@@ -32,7 +32,7 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception{
         data.addAll(Reference.getIndex());
-        primaryStage.setWidth(400);
+        primaryStage.setWidth(800);
         primaryStage.setHeight(600);
 
         hashColumn = new TableColumn("Hash");
@@ -99,7 +99,6 @@ public class Main extends Application {
         fileList.setItems(data);
         fileList.getColumns().addAll(hashColumn,downloadColumn);
         fileList.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-
         borderPane = new BorderPane();
         borderPane.setCenter(fileList);
 

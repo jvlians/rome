@@ -76,6 +76,7 @@ public class FileProcessor {
 
     // Decrypt data from
     public static InputStream decrypt(EncryptionDTO encDTO) throws Exception {
+        Security.addProvider(new BouncyCastleProvider());
         // Resolve Key from keyBytes
         Key key = new SecretKeySpec(encDTO.getKeyBytes(), numIVBytes, encDTO.getKeyBytes().length-numIVBytes, "AES");
 
