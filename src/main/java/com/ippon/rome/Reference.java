@@ -123,7 +123,7 @@ public class Reference {
         }
         RefStream nstream = new RefStream(dto.encrypted, UUID.randomUUID().toString());
 
-        MerkleNode mn = ipfs.add(nstream);
+        MerkleNode mn = ipfs.add(nstream).get(0);
         this.hash = mn.hash.toBase58();
         this.key = dto.keyBytes;
         setFileRow(null, this.hash, this.key);
