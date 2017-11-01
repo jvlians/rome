@@ -13,6 +13,7 @@ import javafx.stage.Stage;
 
 import java.io.*;
 import java.nio.file.StandardCopyOption;
+import java.security.KeyPair;
 
 public class Main extends Application {
 
@@ -222,6 +223,18 @@ public class Main extends Application {
         Class.forName("org.sqlite.JDBC");
         Class.forName("com.ippon.rome.Reference");
 
+        /*
+        KeyPair pair = KeyProcessor.generate();
+        String input = "foo! :)";
+        System.out.println(input);
+        String pub = KeyProcessor.serialize(pair.getPublic());
+        String priv = KeyProcessor.serialize(pair.getPrivate());
+        System.out.println(pub+" "+priv);
+        byte[] data = KeyProcessor.encrypt(pub, input.getBytes());
+        System.out.println(new String(data));
+        byte[] str = KeyProcessor.decrypt(priv, data);
+        System.out.println(new String(str));
+        */
         launch(args);
     }
 }
