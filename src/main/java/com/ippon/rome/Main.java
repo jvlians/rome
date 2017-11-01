@@ -13,6 +13,7 @@ import javafx.stage.Stage;
 
 import java.io.*;
 import java.nio.file.StandardCopyOption;
+import java.util.Optional;
 
 public class Main extends Application {
 
@@ -168,8 +169,16 @@ public class Main extends Application {
                             btn.setOnAction(event -> {
                                 Reference ref = getTableView().getItems().get(getIndex());
                                 //TODO prompt for public key of sharee
+                                TextInputDialog dialog = new TextInputDialog("");
+                                dialog.setTitle("Share File");
+                                dialog.setHeaderText("Please enter the recipient's public key");
+                                dialog.setContentText("Public Key:");
                                 //TODO encrypt decryption key and publish to HyperLedger
-
+                                Optional<String> result = dialog.showAndWait();
+                                if(result.isPresent()){
+                                    String key = result.get();
+                                    //TODO Share that shit
+                                }
                             });
                             setGraphic(btn);
                             setAlignment(Pos.BASELINE_CENTER);
