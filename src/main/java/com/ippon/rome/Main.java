@@ -14,6 +14,7 @@ import javafx.stage.Stage;
 import java.io.*;
 import java.nio.file.StandardCopyOption;
 import java.util.Optional;
+import java.security.KeyPair;
 
 public class Main extends Application {
 
@@ -86,7 +87,7 @@ public class Main extends Application {
         myDownloadColumn.setMinWidth(200.0);
         myDownloadColumn.setCellFactory(p ->
                 new TableCell<Reference, String>() {
-                    final Button btn = new Button("Just Do It");
+                    final Button btn = new Button("Download Button");
                     @Override
                     protected void updateItem(String item, boolean empty) {
                         super.updateItem(item, empty);
@@ -198,7 +199,7 @@ public class Main extends Application {
 
         borderPane = new BorderPane();
 
-        borderPane.setTop(sharedFileList);
+        //borderPane.setTop(sharedFileList);
         borderPane.setCenter(myFileList);
 
         Button addFileButton = new Button("Add File");
@@ -231,6 +232,18 @@ public class Main extends Application {
         Class.forName("org.sqlite.JDBC");
         Class.forName("com.ippon.rome.Reference");
 
+        /*
+        KeyPair pair = KeyProcessor.generate();
+        String input = "foo! :)";
+        System.out.println(input);
+        String pub = KeyProcessor.serialize(pair.getPublic());
+        String priv = KeyProcessor.serialize(pair.getPrivate());
+        System.out.println(pub+" "+priv);
+        byte[] data = KeyProcessor.encrypt(pub, input.getBytes());
+        System.out.println(new String(data));
+        byte[] str = KeyProcessor.decrypt(priv, data);
+        System.out.println(new String(str));
+        */
         launch(args);
     }
 }
