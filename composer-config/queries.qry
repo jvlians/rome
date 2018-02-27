@@ -1,0 +1,9 @@
+/** Sample queries for Commodity Trading business network
+*/
+
+query getFilesSharedWithUser {
+  description: "Get files that are shared with a certain userId"
+  statement:
+    SELECT org.ippon.rome.FilePermission
+        WHERE (sharedWith == _$sharedWith)
+}
