@@ -5,5 +5,12 @@ query getFilesSharedWithUser {
   description: "Get files that are shared with a certain userId"
   statement:
     SELECT org.ippon.rome.FilePermission
-        WHERE (sharedWith == _$sharedWith)
+      WHERE (sharedWith == _$sharedWith)
+}
+
+query getFilesUserOwns {
+  description: "Get files that a certain user owns"
+  statement:
+    SELECT org.ippon.rome.FilePermission
+      WHERE (owner == _$owner)'   
 }
