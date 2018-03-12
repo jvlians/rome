@@ -9,7 +9,7 @@ asset FileReference identified by fileReferenceId {
     --> User owner
 }
 asset FilePermission identified by filePermissionId {
-    o String filerPermissionId
+    o String filePermissionId
     o String encryptedReference
     --> User sharedWith
     --> User owner

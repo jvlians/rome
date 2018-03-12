@@ -12,5 +12,5 @@ query getFilesUserOwns {
   description: "Get files that a certain user owns"
   statement:
     SELECT org.ippon.rome.FilePermission
-      WHERE (owner == _$owner)'   
+      WHERE (owner == _$owner)
 }
