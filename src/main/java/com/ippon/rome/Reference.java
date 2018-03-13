@@ -59,12 +59,10 @@ public class Reference {
             if(rs.next()) {
                 pub = rs.getString("pub");
                 priv = rs.getString("priv");
-                System.out.println("found "+pub+" "+priv);
             } else {
                 KeyPair pair = KeyProcessor.generate();
                 pub = KeyProcessor.serialize(pair.getPublic());
                 priv = KeyProcessor.serialize(pair.getPrivate());
-                System.out.println("made "+pub+" "+priv);
                 PreparedStatement ps = conn.prepareStatement("insert into profile values (null, ?, ?)");
                 ps.setString(1, pub);
                 ps.setString(2, priv);
