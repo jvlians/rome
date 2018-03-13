@@ -29,9 +29,7 @@ public class KeyProcessor {
         }
 
     }
-    public static KeyPair generate() {
-        return generator.genKeyPair();
-    }
+    public static KeyPair generate() { return generator.genKeyPair(); }
     public static String serialize(Key k) {
         return b64.encode(k.getEncoded());
     }
