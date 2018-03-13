@@ -9,6 +9,7 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.KeyPair;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +22,7 @@ public class Reference {
     static PreparedStatement getid = null, gethash = null, index = null;
     private String hash;
     private byte[] key;
+    static String pub, priv;
     static IPFS ipfs;
     static {
         ipfs = new IPFS("/ip4/127.0.0.1/tcp/5001");
@@ -45,6 +47,29 @@ public class Reference {
             gethash = conn.prepareStatement("select * from files where hash = ?;");
             index = conn.prepareStatement("select * from files;");
             //System.out.println("file "+setFileRow(null, "hash", new byte[]{1,2,3}));
+
+            s = getStatement();
+            s.executeUpdate("create table if not exists profile " +
+                    "(id integer primary key autoincrement," +
+                    "pub text not null, priv text not null)");
+            s = getStatement();
+            s.execute("select * from profile");
+            ResultSet rs = s.getResultSet();
+            // if non empty
+            if(rs.next()) {
+                pub = rs.getString("pub");
+                priv = rs.getString("priv");
+                System.out.println("found "+pub+" "+priv);
+            } else {
+                KeyPair pair = KeyProcessor.generate();
+                pub = KeyProcessor.serialize(pair.getPublic());
+                priv = KeyProcessor.serialize(pair.getPrivate());
+                System.out.println("made "+pub+" "+priv);
+                PreparedStatement ps = conn.prepareStatement("insert into profile values (null, ?, ?)");
+                ps.setString(1, pub);
+                ps.setString(2, priv);
+                ps.executeUpdate();
+            }
             getIndex();
         } catch (SQLException e) {
             e.printStackTrace();
