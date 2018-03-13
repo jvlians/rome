@@ -60,7 +60,7 @@ public class Main extends Application {
 
                     }
                 });
-        sharedHashColumn = new TableColumn("Hash");
+        sharedHashColumn = new TableColumn("Files Shared with Me");
         sharedHashColumn.setCellFactory(p ->
                 new TableCell<Reference, String>() {
                     TextField txt = new TextField();
@@ -124,7 +124,7 @@ public class Main extends Application {
         sharedDownloadColumn.setMinWidth(200.0);
         sharedDownloadColumn.setCellFactory(p ->
                 new TableCell<Reference, String>() {
-                    final Button btn = new Button("Just Do It");
+                    final Button btn = new Button("Download");
                     @Override
                     protected void updateItem(String item, boolean empty) {
                         super.updateItem(item, empty);
@@ -199,7 +199,7 @@ public class Main extends Application {
 
         borderPane = new BorderPane();
 
-        //borderPane.setTop(sharedFileList);
+        borderPane.setTop(sharedFileList);
         borderPane.setCenter(myFileList);
 
         Button addFileButton = new Button("Add File");
