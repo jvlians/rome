@@ -8,6 +8,9 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -202,6 +205,10 @@ public class Main extends Application {
         borderPane.setTop(sharedFileList);
         borderPane.setCenter(myFileList);
 
+
+        HBox bottomPane = new HBox(8);
+        bottomPane.setAlignment(Pos.CENTER_LEFT);
+
         Button addFileButton = new Button("Add File");
         addFileButton.setOnAction(event -> {
             FileChooser fileChooser = new FileChooser();
@@ -218,7 +225,16 @@ public class Main extends Application {
 
         });
 
-        borderPane.setBottom(addFileButton);
+
+        String myPublicKey = "My memorable public key";
+        Text publicKeyText = new Text("Public Key:");
+        publicKeyText.autosize();
+        TextField publicKey = new TextField(myPublicKey);
+        publicKey.setEditable(false);
+        publicKey.setMinWidth(200);
+
+        bottomPane.getChildren().addAll(addFileButton, publicKeyText, publicKey);
+        borderPane.setBottom(bottomPane);
 
         Scene scene = new Scene(borderPane);
         primaryStage.setTitle("Example IPFS Encryption/Decryption");
