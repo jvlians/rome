@@ -257,7 +257,7 @@ public class Main extends Application {
         });
 
 
-        String myPublicKey = "My memorable public key";
+        String myPublicKey = Reference.pub;
         Text publicKeyText = new Text("Public Key:");
         publicKeyText.autosize();
         TextField publicKey = new TextField(myPublicKey);
