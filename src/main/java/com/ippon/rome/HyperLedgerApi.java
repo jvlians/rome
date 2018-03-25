@@ -70,13 +70,13 @@ public class HyperLedgerApi {
             return null;
         }
     }
-    public String getFilesSharedWithUser(String userId) throws IOException {
+    public JsonNode getFilesSharedWithUser(String userId) throws IOException {
         String url = apiUrl + "/api/queries/getFilesSharedWithUser";
         try {
             HttpResponse<JsonNode> jsonResponse = Unirest.get(url)
                     .queryString("sharedWith", userId)
                     .asJson();
-            return jsonResponse.getBody().toString();
+            return jsonResponse.getBody();
         } catch (UnirestException e) {
             e.printStackTrace();
             return null;

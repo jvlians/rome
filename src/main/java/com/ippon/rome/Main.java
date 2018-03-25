@@ -1,6 +1,7 @@
 package com.ippon.rome;
 
 import com.google.common.primitives.Bytes;
+import com.mashape.unirest.http.JsonNode;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -15,9 +16,13 @@ import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.bouncycastle.crypto.InvalidCipherTextException;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.*;
 import java.nio.file.StandardCopyOption;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Optional;
 import java.security.KeyPair;
 import java.util.UUID;
@@ -36,12 +41,12 @@ public class Main extends Application {
 
     private TableColumn myHashColumn, myDownloadColumn, myShareColumn, sharedHashColumn, sharedDownloadColumn, reshareColumn;
 
-    private HyperLedgerApi hlapi = new HyperLedgerApi("http://184.172.247.54:31090");
+    private static HyperLedgerApi hlapi = new HyperLedgerApi("http://184.172.247.54:31090");
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-        myFiles.addAll(Reference.getIndex());
-        sharedFiles.addAll(Reference.getIndex());
+        myFiles.addAll(Reference.getOurs(1));
+        loadShared();
         primaryStage.setWidth(800);
         primaryStage.setHeight(600);
 
@@ -175,23 +180,7 @@ public class Main extends Application {
                         if(!empty) {
                             btn.setOnAction(event -> {
                                 Reference ref = getTableView().getItems().get(getIndex());
-                                TextInputDialog dialog = new TextInputDialog("");
-                                dialog.setTitle("Share File");
-                                dialog.setHeaderText("Please enter the recipient's public key");
-                                dialog.setContentText("Public Key:");
-                                Optional<String> result = dialog.showAndWait();
-                                if(result.isPresent()){
-                                    String pubkey = result.get();               // recipient's public key
-                                    byte[] hash = ref.getHash().getBytes();     // ipfs file hash
-                                    byte[] symmkey = ref.getKey();              // encrypted file's symmetric key
-                                    // byte[] fname = ref.getName();            // encrypted file's original filename
-                                    try {
-                                        byte[] encrypted = KeyProcessor.encrypt(result.get(), Bytes.concat(hash, symmkey));
-                                        hlapi.shareWithUser(UUID.randomUUID().toString(),encrypted.toString(),pubkey);
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
-                                    }
-                                }
+                                shareRef(ref);
                             });
                             setGraphic(btn);
                             setAlignment(Pos.BASELINE_CENTER);
@@ -212,17 +201,7 @@ public class Main extends Application {
                         if(!empty) {
                             btn.setOnAction(event -> {
                                 Reference ref = getTableView().getItems().get(getIndex());
-                                //TODO prompt for public key of sharee
-                                TextInputDialog dialog = new TextInputDialog("");
-                                dialog.setTitle("Share File");
-                                dialog.setHeaderText("Please enter the recipient's public key");
-                                dialog.setContentText("Public Key:");
-                                //TODO encrypt decryption key and publish to HyperLedger
-                                Optional<String> result = dialog.showAndWait();
-                                if(result.isPresent()){
-                                    String key = result.get();
-                                    //TODO Share that shit
-                                }
+                                shareRef(ref);
                             });
                             setGraphic(btn);
                             setAlignment(Pos.BASELINE_CENTER);
@@ -282,6 +261,38 @@ public class Main extends Application {
         primaryStage.show();
 
     }
+    public void loadShared() {
+        JsonNode node = null;
+        try {
+            node = hlapi.getFilesSharedWithUser(Reference.pub);
+        } catch(IOException e) {
+            System.err.println("failed to get shared files");
+            return;
+        }
+        try {
+            Reference.clearShared();
+        } catch(SQLException e) {
+            System.err.println("failed to delete shared files");
+            return;
+        }
+        JSONArray arr = node.getArray();
+        ArrayList<Reference> next = new ArrayList();
+        for(int i=0; i<arr.length(); i++) {
+            JSONObject o = arr.getJSONObject(i);
+            byte[] encref = o.getString("encryptedReference").getBytes(), catref;
+            try {
+                catref = KeyProcessor.decrypt(Reference.priv, encref);
+                Reference ref = Reference.fromCatRef(catref);
+                ref.insertFileRow();
+                next.add(ref);
+            } catch (Exception e) {
+                System.err.println("decryption failed :(");
+                return;
+            }
+        }
+        sharedFiles.removeAll();
+        sharedFiles.addAll(next);
+    }
 
 
     public static void main(String[] args) throws ClassNotFoundException {
@@ -301,5 +312,23 @@ public class Main extends Application {
         System.out.println(new String(str));
         */
         launch(args);
+    }
+    static void shareRef(Reference ref) {
+
+        TextInputDialog dialog = new TextInputDialog("");
+        dialog.setTitle("Share File");
+        dialog.setHeaderText("Please enter the recipient's public key");
+        dialog.setContentText("Public Key:");
+        Optional<String> result = dialog.showAndWait();
+        if(result.isPresent()){
+            byte[] cat = ref.toCatRef();
+            String pubkey = result.get();  // recipient's public key
+            try {
+                byte[] encrypted = KeyProcessor.encrypt(pubkey, cat);
+                hlapi.shareWithUser(UUID.randomUUID().toString(),new String(encrypted),pubkey);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

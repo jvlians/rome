@@ -1,5 +1,6 @@
 package com.ippon.rome;
 
+import com.google.common.primitives.Bytes;
 import io.ipfs.api.IPFS;
 import io.ipfs.api.MerkleNode;
 import io.ipfs.api.NamedStreamable;
@@ -11,16 +12,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.KeyPair;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 public class Reference {
     static Connection conn = null;
     static PreparedStatement insert = null, update = null, last = null;
+    static PreparedStatement delShared = null, getOurs = null;
     static PreparedStatement getid = null, gethash = null, index = null;
     private String hash;
+    private static final int HASHLEN=46;
     private byte[] key;
     private boolean ours;
     static String pub, priv;
@@ -43,10 +43,12 @@ public class Reference {
             update = conn.prepareStatement("update files set " +
                     "hash = ifnull(?, hash), key = ifnull(?, key), ours = ifnull(?, ours) " +
                     "where id = ?;");
+            delShared = conn.prepareStatement("delete from files where ours=0;");
             last = conn.prepareStatement("select last_insert_rowid();");
             getid = conn.prepareStatement("select * from files where id = ?;");
             gethash = conn.prepareStatement("select * from files where hash = ?;");
             index = conn.prepareStatement("select * from files;");
+            getOurs = conn.prepareStatement("select * from files where ours = ?;");
             //System.out.println("file "+setFileRow(null, "hash", new byte[]{1,2,3}));
 
             s = getStatement();
@@ -107,6 +109,9 @@ public class Reference {
             return id;
         }
     }
+    void insertFileRow() throws SQLException {
+        setFileRow(null, hash, key, ours?1:0);
+    }
     static Reference getFileRow(int id) throws SQLException {
         getid.setInt(1, id);
         return new Reference(getid.executeQuery());
@@ -115,9 +120,18 @@ public class Reference {
         gethash.setString(1, hash);
         return new Reference(gethash.executeQuery());
     }
+    static void clearShared() throws SQLException {
+        delShared.execute();
+    }
+    static List<Reference> getOurs(int ours) throws SQLException {
+        getOurs.setInt(1, ours);
+        return toRefList(getOurs.executeQuery());
+    }
     static List<Reference> getIndex() throws SQLException {
+        return toRefList(index.executeQuery());
+    }
+    private static List<Reference> toRefList(ResultSet rs) throws SQLException {
         ArrayList<Reference> list = new ArrayList<>();
-        ResultSet rs = index.executeQuery();
         while(rs.next()) {
             Reference r = new Reference(rs);
             list.add(r);
@@ -162,6 +176,19 @@ public class Reference {
 
     public byte[] getKey() {
         return key;
+    }
+    public byte[] toCatRef() {
+
+        byte[] hashb = hash.getBytes();
+        System.out.println(hashb.length);
+        // byte[] fname = ref.getName();            // encrypted file's original filename
+        return Bytes.concat(hashb, key);
+    }
+    public static Reference fromCatRef(byte[] cat) {
+        byte[] hashb = Arrays.copyOfRange(cat, 0, HASHLEN);
+        byte[] key = Arrays.copyOfRange(cat, HASHLEN, cat.length);
+
+        return new Reference(new String(hashb), key, false);
     }
 
     public InputStream getData() throws IOException {
