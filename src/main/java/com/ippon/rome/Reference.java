@@ -156,6 +156,10 @@ public class Reference {
         return hash;
     }
 
+    public byte[] getKey() {
+        return key;
+    }
+
     public InputStream getData() throws IOException {
         InputStream stream = ipfs.catStream(Multihash.fromBase58(this.hash));
         EncryptionDTO dto = new EncryptionDTO(key, stream);
