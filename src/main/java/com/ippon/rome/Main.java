@@ -264,7 +264,7 @@ public class Main extends Application {
     public void loadShared() {
         JsonNode node = null;
         try {
-            hlapi.getFilesSharedWithUser(Reference.pub);
+            node = hlapi.getFilesSharedWithUser(Reference.pub);
         } catch(IOException e) {
             System.err.println("failed to get shared files");
             return;
