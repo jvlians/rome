@@ -31,7 +31,7 @@ public class Main extends Application {
     private TableView myFileList;
     private TableView sharedFileList;
 
-    private TableColumn myHashColumn, myDownloadColumn, myShareColumn, sharedHashColumn, sharedDownloadColumn;
+    private TableColumn myHashColumn, myDownloadColumn, myShareColumn, sharedHashColumn, sharedDownloadColumn, reshareColumn;
 
 
 
@@ -191,13 +191,44 @@ public class Main extends Application {
                     }
                 });
 
+        reshareColumn = new TableColumn("Share File");
+        reshareColumn.setMaxWidth(200.0);
+        reshareColumn.setMinWidth(200.0);
+        reshareColumn.setCellFactory(p ->
+                new TableCell<Reference, String>() {
+                    final Button btn = new Button("Share File");
+                    @Override
+                    protected void updateItem(String item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if(!empty) {
+                            btn.setOnAction(event -> {
+                                Reference ref = getTableView().getItems().get(getIndex());
+                                //TODO prompt for public key of sharee
+                                TextInputDialog dialog = new TextInputDialog("");
+                                dialog.setTitle("Share File");
+                                dialog.setHeaderText("Please enter the recipient's public key");
+                                dialog.setContentText("Public Key:");
+                                //TODO encrypt decryption key and publish to HyperLedger
+                                Optional<String> result = dialog.showAndWait();
+                                if(result.isPresent()){
+                                    String key = result.get();
+                                    //TODO Share that shit
+                                }
+                            });
+                            setGraphic(btn);
+                            setAlignment(Pos.BASELINE_CENTER);
+                            setText(null);
+                        }
+                    }
+                });
+
         myFileList = new TableView();
         myFileList.setItems(myFiles);
         myFileList.getColumns().addAll(myHashColumn, myDownloadColumn, myShareColumn);
         myFileList.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         sharedFileList = new TableView();
         sharedFileList.setItems(sharedFiles);
-        sharedFileList.getColumns().addAll(sharedHashColumn, sharedDownloadColumn);
+        sharedFileList.getColumns().addAll(sharedHashColumn, sharedDownloadColumn, reshareColumn);
         sharedFileList.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
         borderPane = new BorderPane();
