@@ -2,6 +2,10 @@ package com.ippon.rome;
 
 
 import com.ippon.rome.util.ParameterStringBuilder;
+import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.JsonNode;
+import com.mashape.unirest.http.Unirest;
+import com.mashape.unirest.http.exceptions.UnirestException;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -14,54 +18,67 @@ import java.util.Map;
 public class HyperLedgerApi {
     private String apiUrl;
 
+    public static void main(String[] args) throws IOException, UnirestException {
+        HyperLedgerApi api = new HyperLedgerApi("http://184.172.247.54:31090");
+        System.out.println(api.getFilesSharedWithUser("testUser"));
+        Unirest.shutdown();
+    }
+
     public HyperLedgerApi(String apiUrl){
         this.apiUrl = apiUrl; //http://example.com
     }
 
-    public void createUser(String userId) throws IOException {
-        URL url = new URL(apiUrl + "/api/User");
-        HttpURLConnection con = (HttpURLConnection) url.openConnection();
-        con.setRequestMethod("POST");
-        Map<String, String> parameters = new HashMap<>();
-        parameters.put("data", String.format("{'$class':'org.ippon.rome.User','userId':'%s'}",userId));
-
-        con.setDoOutput(true);
-        DataOutputStream out = new DataOutputStream(con.getOutputStream());
-        out.writeBytes(ParameterStringBuilder.getParamsString(parameters));
-        out.flush();
-        out.close();
-        con.disconnect();
+    public HttpResponse<JsonNode> createUser(String userId) throws IOException {
+        String url = apiUrl + "/api/User";
+        String body = String.format("{'$class':'org.ippon.rome.User','userId':'%s'}",userId);
+        try {
+            HttpResponse<JsonNode> jsonResponse = Unirest.post(url)
+                    .header("accept", "application/json")
+                    .header("Content-Type", "application/json")
+                    .body(body)
+                    .asJson();
+            return jsonResponse;
+        } catch (UnirestException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
-    public void shareWithUser(String filePermissionId, String message, String recipientId, String ownerId) throws IOException {
-        URL url = new URL(apiUrl + "/api/FilePermission");
-            HttpURLConnection con = (HttpURLConnection) url.openConnection();
-        con.setRequestMethod("POST");
-        Map<String, String> parameters = new HashMap<>();
-        parameters.put("data", String.format("{'$class':'org.ippon.rome.FilePermission'," +
+    public HttpResponse<JsonNode> shareWithUser(String filePermissionId, String message, String recipientId, String ownerId) throws IOException {
+        String url = apiUrl + "/api/FilePermission";
+        String body = String.format("{'$class':'org.ippon.rome.FilePermission'," +
                         "'filePermissionId': '%s','encryptedReference': '%s'," +
                         "'sharedWith': '%s','owner': '%s'}",
-                        filePermissionId,message,recipientId,ownerId));
-
-        con.setDoOutput(true);
-        DataOutputStream out = new DataOutputStream(con.getOutputStream());
-        out.writeBytes(ParameterStringBuilder.getParamsString(parameters));
-        out.flush();
-        out.close();
-        con.disconnect();
+                        filePermissionId,message,recipientId,ownerId);
+        try {
+            HttpResponse<JsonNode> jsonResponse = Unirest.post(url)
+                    .header("accept", "application/json")
+                    .header("Content-Type", "application/json")
+                    .body(body)
+                    .asJson();
+            return jsonResponse;
+        } catch (UnirestException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
     public String getFilesSharedWithUser(String userId) throws IOException {
-        URL url = new URL(apiUrl + "/api/queries/getFilesSharedWithUser");
-        HttpURLConnection con = (HttpURLConnection) url.openConnection();
-        con.setRequestMethod("GET");
-        BufferedReader in = new BufferedReader(
-                new InputStreamReader(con.getInputStream()));
-        String inputLine;
-        StringBuffer content = new StringBuffer();
-        while ((inputLine = in.readLine()) != null) {
-            content.append(inputLine);
+        String url = apiUrl + "/api/queries/getFilesSharedWithUser";
+        try {
+            HttpResponse<JsonNode> jsonResponse = Unirest.get(url)
+                    .queryString("sharedWith", userId)
+                    .asJson();
+            return jsonResponse.getBody().toString();
+        } catch (UnirestException e) {
+            e.printStackTrace();
+            return null;
         }
-        in.close();
-        con.disconnect();
-        return content.toString();
+    }
+
+    public void shutdown(){
+        try {
+            Unirest.shutdown();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
