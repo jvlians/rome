@@ -20,6 +20,7 @@ import java.io.*;
 import java.nio.file.StandardCopyOption;
 import java.util.Optional;
 import java.security.KeyPair;
+import java.util.UUID;
 
 public class Main extends Application {
 
@@ -35,7 +36,7 @@ public class Main extends Application {
 
     private TableColumn myHashColumn, myDownloadColumn, myShareColumn, sharedHashColumn, sharedDownloadColumn, reshareColumn;
 
-
+    private HyperLedgerApi hlapi = new HyperLedgerApi("http://184.172.247.54:31090");
 
     @Override
     public void start(Stage primaryStage) throws Exception{
@@ -185,11 +186,11 @@ public class Main extends Application {
                                     byte[] symmkey = ref.getKey();              // encrypted file's symmetric key
                                     // byte[] fname = ref.getName();            // encrypted file's original filename
                                     try {
-                                        KeyProcessor.encrypt(result.get(), Bytes.concat(hash, symmkey));
+                                        byte[] encrypted = KeyProcessor.encrypt(result.get(), Bytes.concat(hash, symmkey));
+                                        hlapi.shareWithUser(UUID.randomUUID().toString(),encrypted.toString(),pubkey,Reference.pub);
                                     } catch (Exception e) {
                                         e.printStackTrace();
                                     }
-                                    //TODO Share that shit
                                 }
                             });
                             setGraphic(btn);
