@@ -1,5 +1,6 @@
 package com.ippon.rome;
 
+import com.google.common.primitives.Bytes;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -13,6 +14,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import org.bouncycastle.crypto.InvalidCipherTextException;
 
 import java.io.*;
 import java.nio.file.StandardCopyOption;
@@ -172,15 +174,21 @@ public class Main extends Application {
                         if(!empty) {
                             btn.setOnAction(event -> {
                                 Reference ref = getTableView().getItems().get(getIndex());
-                                //TODO prompt for public key of sharee
                                 TextInputDialog dialog = new TextInputDialog("");
                                 dialog.setTitle("Share File");
                                 dialog.setHeaderText("Please enter the recipient's public key");
                                 dialog.setContentText("Public Key:");
-                                //TODO encrypt decryption key and publish to HyperLedger
                                 Optional<String> result = dialog.showAndWait();
                                 if(result.isPresent()){
-                                    String key = result.get();
+                                    String pubkey = result.get();               // recipient's public key
+                                    byte[] hash = ref.getHash().getBytes();     // ipfs file hash
+                                    byte[] symmkey = ref.getKey();              // encrypted file's symmetric key
+                                    // byte[] fname = ref.getName();            // encrypted file's original filename
+                                    try {
+                                        KeyProcessor.encrypt(result.get(), Bytes.concat(hash, symmkey));
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
                                     //TODO Share that shit
                                 }
                             });
@@ -257,7 +265,7 @@ public class Main extends Application {
         });
 
 
-        String myPublicKey = "My memorable public key";
+        String myPublicKey = Reference.pub;
         Text publicKeyText = new Text("Public Key:");
         publicKeyText.autosize();
         TextField publicKey = new TextField(myPublicKey);
