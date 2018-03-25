@@ -22,6 +22,7 @@ public class Reference {
     static PreparedStatement getid = null, gethash = null, index = null;
     private String hash;
     private byte[] key;
+    private boolean ours;
     static String pub, priv;
     static IPFS ipfs;
     static {
@@ -36,11 +37,11 @@ public class Reference {
             //s.executeUpdate("drop table if exists files");
             s.executeUpdate("create table if not exists files " +
                     "(id integer primary key autoincrement," +
-                    "hash text not null, key blob not null)");
+                    "hash text not null, key blob not null, ours integer)");
 
-            insert = conn.prepareStatement("insert into files values (null, ?, ?);");
+            insert = conn.prepareStatement("insert into files values (null, ?, ?, ?);");
             update = conn.prepareStatement("update files set " +
-                    "hash = ifnull(?, hash), key = ifnull(?, key) " +
+                    "hash = ifnull(?, hash), key = ifnull(?, key), ours = ifnull(?, ours) " +
                     "where id = ?;");
             last = conn.prepareStatement("select last_insert_rowid();");
             getid = conn.prepareStatement("select * from files where id = ?;");
@@ -91,16 +92,17 @@ public class Reference {
             return null;
         }
     }
-    static int setFileRow(Integer id, String hash, byte[] key) throws SQLException {
+    static int setFileRow(Integer id, String hash, byte[] key, Integer ours) throws SQLException {
         PreparedStatement ps = id == null ? insert : update;
-        ps.setString(1, hash);
-        ps.setBytes(2, key);
+        if(hash != null) ps.setString(1, hash);
+        if(key != null) ps.setBytes(2, key);
+        if(ours != null) ps.setInt(3, ours);
         if(id == null) {
             ps.executeUpdate();
             // TODO figure out how to insert+select locked
             return last.executeQuery().getInt(1);
         } else {
-            ps.setInt(3, id);
+            ps.setInt(4, id);
             ps.executeUpdate();
             return id;
         }
@@ -117,8 +119,7 @@ public class Reference {
         ArrayList<Reference> list = new ArrayList<>();
         ResultSet rs = index.executeQuery();
         while(rs.next()) {
-            Reference r = new Reference(rs.getString("hash"),
-                    rs.getBytes("key"));
+            Reference r = new Reference(rs);
             list.add(r);
             // read the result set
             System.out.println("id   = " + rs.getInt("id"));
@@ -129,12 +130,15 @@ public class Reference {
         return list;
     }
     private Reference(ResultSet set) throws SQLException {
-        this(set.getString("hash"), set.getBytes("key"));
+        this(set.getString("hash"),
+                set.getBytes("key"),
+                set.getInt("ours")!=0);
     }
 
-    public Reference(String hash, byte[] key){
+    public Reference(String hash, byte[] key, boolean ours){
         this.hash = hash;
         this.key = key;
+        this.ours = ours;
     }
 
     public Reference(BufferedInputStream file) throws Exception {
@@ -149,7 +153,7 @@ public class Reference {
         MerkleNode mn = ipfs.add(nstream).get(0);
         this.hash = mn.hash.toBase58();
         this.key = dto.keyBytes;
-        setFileRow(null, this.hash, this.key);
+        setFileRow(null, this.hash, this.key, 1);
     }
 
     public String getHash() {
