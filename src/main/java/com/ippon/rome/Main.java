@@ -187,7 +187,7 @@ public class Main extends Application {
                                     // byte[] fname = ref.getName();            // encrypted file's original filename
                                     try {
                                         byte[] encrypted = KeyProcessor.encrypt(result.get(), Bytes.concat(hash, symmkey));
-                                        hlapi.shareWithUser(UUID.randomUUID().toString(),encrypted.toString(),pubkey);
+                                        hlapi.shareWithUser(UUID.randomUUID().toString(),encrypted.toString(),pubkey,Reference.pub);
                                     } catch (Exception e) {
                                         e.printStackTrace();
                                     }
