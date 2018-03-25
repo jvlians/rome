@@ -19,9 +19,18 @@ public class HyperLedgerApi {
     private String apiUrl;
 
     public static void main(String[] args) throws IOException, UnirestException {
-        HyperLedgerApi api = new HyperLedgerApi("http://184.172.247.54:31090");
-        System.out.println(api.getFilesSharedWithUser("testUser"));
-        Unirest.shutdown();
+//        HyperLedgerApi api = new HyperLedgerApi("http://184.172.247.54:31090");
+//        HttpResponse<JsonNode> response;
+//        //response = api.createUser("testUser");
+//        System.out.println(response.getStatus());
+//        System.out.println(response.getBody());
+//
+//        response = api.shareWithUser("testFilePermission","testMessage","testUser");
+//        System.out.println(response.getStatus());
+//        System.out.println(response.getBody());
+//
+//        System.out.println(api.getFilesSharedWithUser("testUser"));
+//        Unirest.shutdown();
     }
 
     public HyperLedgerApi(String apiUrl){
@@ -30,7 +39,7 @@ public class HyperLedgerApi {
 
     public HttpResponse<JsonNode> createUser(String userId) throws IOException {
         String url = apiUrl + "/api/User";
-        String body = String.format("{'$class':'org.ippon.rome.User','userId':'%s'}",userId);
+        String body = String.format("{\"$class\":\"org.ippon.rome.User\",\"userId\":\"%s\"}",userId);
         try {
             HttpResponse<JsonNode> jsonResponse = Unirest.post(url)
                     .header("accept", "application/json")
@@ -43,12 +52,12 @@ public class HyperLedgerApi {
             return null;
         }
     }
-    public HttpResponse<JsonNode> shareWithUser(String filePermissionId, String message, String recipientId, String ownerId) throws IOException {
+    public HttpResponse<JsonNode> shareWithUser(String filePermissionId, String message, String recipientId) throws IOException {
         String url = apiUrl + "/api/FilePermission";
-        String body = String.format("{'$class':'org.ippon.rome.FilePermission'," +
-                        "'filePermissionId': '%s','encryptedReference': '%s'," +
-                        "'sharedWith': '%s','owner': '%s'}",
-                        filePermissionId,message,recipientId,ownerId);
+        String body = String.format("{\"$class\":\"org.ippon.rome.FilePermission\"," +
+                        "\"filePermissionId\": \"%s\",\"encryptedReference\": \"%s\"," +
+                        "\"sharedWith\": \"%s\"}",
+                        filePermissionId,message,recipientId);
         try {
             HttpResponse<JsonNode> jsonResponse = Unirest.post(url)
                     .header("accept", "application/json")
