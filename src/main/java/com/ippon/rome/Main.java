@@ -325,7 +325,7 @@ public class Main extends Application {
             String pubkey = result.get();  // recipient's public key
             try {
                 byte[] encrypted = KeyProcessor.encrypt(pubkey, cat);
-                hlapi.shareWithUser(UUID.randomUUID().toString(),encrypted.toString(),pubkey,"");
+                hlapi.shareWithUser(UUID.randomUUID().toString(),new String(encrypted),pubkey);
             } catch (Exception e) {
                 e.printStackTrace();
             }
