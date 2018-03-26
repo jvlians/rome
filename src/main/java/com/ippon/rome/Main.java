@@ -3,6 +3,7 @@ package com.ippon.rome;
 import com.google.common.primitives.Bytes;
 import com.mashape.unirest.http.JsonNode;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
@@ -251,6 +252,16 @@ public class Main extends Application {
         TextField publicKey = new TextField(myPublicKey);
         publicKey.setEditable(false);
         publicKey.setMinWidth(200);
+        publicKey.focusedProperty().addListener((obs, wasFocused, isFocused) -> {
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    if (isFocused) {
+                        publicKey.selectAll();
+                    }
+                }
+            });
+        });
 
         bottomPane.getChildren().addAll(addFileButton, publicKeyText, publicKey);
         borderPane.setBottom(bottomPane);
