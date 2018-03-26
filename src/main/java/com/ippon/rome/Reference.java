@@ -182,16 +182,12 @@ public class Reference {
         byte[] hashb = hash.getBytes();
         // byte[] fname = ref.getName();            // encrypted file's original filename
         byte[] cat = Bytes.concat(hashb, key);
-        String enc = KeyProcessor.b64.encode(cat);
+        String enc = KeyProcessor.b64e(cat);
         return enc;
     }
     public static Reference fromCatRef(String enc) {
-        byte[] cat = new byte[0];
-        try {
-            cat = KeyProcessor.b64d.decodeBuffer(enc);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        byte[] cat = KeyProcessor.b64d(enc);
+
         byte[] hashb = Arrays.copyOfRange(cat, 0, HASHLEN);
         byte[] key = Arrays.copyOfRange(cat, HASHLEN, cat.length);
 

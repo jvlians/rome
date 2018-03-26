@@ -58,9 +58,7 @@ public class HyperLedgerApi {
         String body = String.format("{\"$class\":\"org.ippon.rome.FilePermission\"," +
                         "\"filePermissionId\": \"%s\",\"encryptedReference\": \"%s\"," +
                         "\"sharedWith\": \"%s\"}",
-                        filePermissionId,message.replaceAll("\\s",""),recipientId);
-        System.out.println("hhhehehe");
-        System.out.println(body);
+                        filePermissionId,message,recipientId);
         try {
             HttpResponse<JsonNode> jsonResponse = Unirest.post(url)
                     .header("accept", "application/json")

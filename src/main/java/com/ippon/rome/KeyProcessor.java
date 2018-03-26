@@ -15,8 +15,8 @@ import java.security.*;
 
 public class KeyProcessor {
     private static SecureRandom random = new SecureRandom();
-    public static BASE64Encoder b64 = new BASE64Encoder();
-    public static BASE64Decoder b64d = new BASE64Decoder();
+    private static BASE64Encoder b64enc = new BASE64Encoder();
+    private static BASE64Decoder b64dec = new BASE64Decoder();
     private static KeyPairGenerator generator;
     static {
         Security.addProvider(new BouncyCastleProvider());
@@ -31,13 +31,13 @@ public class KeyProcessor {
     }
     public static KeyPair generate() { return generator.genKeyPair(); }
     public static String serialize(Key k) {
-        return b64.encode(k.getEncoded());
+        return b64e(k.getEncoded());
     }
     public static byte[] cypher(String key, byte[] data, boolean encrypt) throws
             IOException, InvalidCipherTextException {
         AsymmetricBlockCipher e = new RSAEngine();
         e = new org.bouncycastle.crypto.encodings.PKCS1Encoding(e);
-        byte[] dec = b64d.decodeBuffer(key);
+        byte[] dec = b64d(key);
         AsymmetricKeyParameter publicKey = (AsymmetricKeyParameter) (encrypt ?
                     PublicKeyFactory.createKey(dec) :
                 PrivateKeyFactory.createKey(dec));
@@ -46,10 +46,21 @@ public class KeyProcessor {
     }
     public static String encrypt(String pub, byte[] plaintext) throws
             IOException, InvalidCipherTextException {
-        return b64.encode(cypher(pub, plaintext, true));
+        return b64e(cypher(pub, plaintext, true));
     }
     public static byte[] decrypt(String priv, String cyphertext) throws
             IOException, InvalidCipherTextException {
-        return cypher(priv, b64d.decodeBuffer(cyphertext), false);
+        return cypher(priv, b64d(cyphertext), false);
+    }
+    public static  String b64e(byte[] input) {
+        return b64enc.encode(input).replaceAll("\\s", "");
+    }
+    public static byte[] b64d(String input) {
+        try {
+            return b64dec.decodeBuffer(input);
+        } catch(Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }
