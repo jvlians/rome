@@ -279,9 +279,9 @@ public class Main extends Application {
         ArrayList<Reference> next = new ArrayList();
         for(int i=0; i<arr.length(); i++) {
             JSONObject o = arr.getJSONObject(i);
-            byte[] catref, encref = o.getString("encryptedReference").getBytes();
+            String encref = o.getString("encryptedReference");
             try {
-                catref = KeyProcessor.decrypt(Reference.priv, encref);
+                byte[] catref = KeyProcessor.decrypt(Reference.priv, encref);
                 Reference ref = Reference.fromCatRef(new String(catref));
                 ref.insertFileRow();
                 next.add(ref);
@@ -324,8 +324,8 @@ public class Main extends Application {
             String cat = ref.toCatRef();
             String pubkey = result.get();  // recipient's public key
             try {
-                byte[] encrypted = KeyProcessor.encrypt(pubkey, cat.getBytes());
-                hlapi.shareWithUser(UUID.randomUUID().toString(),new String(encrypted),pubkey);
+                String encrypted = KeyProcessor.encrypt(pubkey, cat.getBytes());
+                hlapi.shareWithUser(UUID.randomUUID().toString(),encrypted,pubkey);
             } catch (Exception e) {
                 e.printStackTrace();
             }

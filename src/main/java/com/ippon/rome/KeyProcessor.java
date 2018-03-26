@@ -44,12 +44,12 @@ public class KeyProcessor {
         e.init(encrypt, publicKey);
         return e.processBlock(data,0, data.length);
     }
-    public static byte[] encrypt(String pub, byte[] plaintext) throws
+    public static String encrypt(String pub, byte[] plaintext) throws
             IOException, InvalidCipherTextException {
-        return cypher(pub, plaintext, true);
+        return b64.encode(cypher(pub, plaintext, true));
     }
-    public static byte[] decrypt(String priv, byte[] cyphertext) throws
+    public static byte[] decrypt(String priv, String cyphertext) throws
             IOException, InvalidCipherTextException {
-        return cypher(priv, cyphertext, false);
+        return cypher(priv, b64d.decodeBuffer(cyphertext), false);
     }
 }
