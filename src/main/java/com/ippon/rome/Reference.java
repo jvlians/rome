@@ -35,6 +35,7 @@ public class Reference {
 
             Statement s = getStatement();
             //s.executeUpdate("drop table if exists files");
+            //s.executeUpdate("drop table if exists profile");
             s.executeUpdate("create table if not exists files " +
                     "(id integer primary key autoincrement," +
                     "hash text not null, key blob not null, ours integer)");
