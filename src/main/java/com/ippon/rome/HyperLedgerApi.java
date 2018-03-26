@@ -6,6 +6,7 @@ import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
+import jdk.nashorn.internal.ir.ObjectNode;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -57,7 +58,9 @@ public class HyperLedgerApi {
         String body = String.format("{\"$class\":\"org.ippon.rome.FilePermission\"," +
                         "\"filePermissionId\": \"%s\",\"encryptedReference\": \"%s\"," +
                         "\"sharedWith\": \"%s\"}",
-                        filePermissionId,message,recipientId);
+                        filePermissionId,message.replaceAll("\\s",""),recipientId);
+        System.out.println("hhhehehe");
+        System.out.println(body);
         try {
             HttpResponse<JsonNode> jsonResponse = Unirest.post(url)
                     .header("accept", "application/json")
