@@ -177,14 +177,21 @@ public class Reference {
     public byte[] getKey() {
         return key;
     }
-    public byte[] toCatRef() {
+    public String toCatRef() {
 
         byte[] hashb = hash.getBytes();
-        System.out.println(hashb.length);
         // byte[] fname = ref.getName();            // encrypted file's original filename
-        return Bytes.concat(hashb, key);
+        byte[] cat = Bytes.concat(hashb, key);
+        String enc = KeyProcessor.b64.encode(cat);
+        return enc;
     }
-    public static Reference fromCatRef(byte[] cat) {
+    public static Reference fromCatRef(String enc) {
+        byte[] cat = new byte[0];
+        try {
+            cat = KeyProcessor.b64d.decodeBuffer(enc);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         byte[] hashb = Arrays.copyOfRange(cat, 0, HASHLEN);
         byte[] key = Arrays.copyOfRange(cat, HASHLEN, cat.length);
 

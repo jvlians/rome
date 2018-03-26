@@ -15,8 +15,8 @@ import java.security.*;
 
 public class KeyProcessor {
     private static SecureRandom random = new SecureRandom();
-    private static BASE64Encoder b64 = new BASE64Encoder();
-    private static BASE64Decoder b64d = new BASE64Decoder();
+    public static BASE64Encoder b64 = new BASE64Encoder();
+    public static BASE64Decoder b64d = new BASE64Decoder();
     private static KeyPairGenerator generator;
     static {
         Security.addProvider(new BouncyCastleProvider());
@@ -39,7 +39,7 @@ public class KeyProcessor {
         e = new org.bouncycastle.crypto.encodings.PKCS1Encoding(e);
         byte[] dec = b64d.decodeBuffer(key);
         AsymmetricKeyParameter publicKey = (AsymmetricKeyParameter) (encrypt ?
-                PublicKeyFactory.createKey(dec) :
+                    PublicKeyFactory.createKey(dec) :
                 PrivateKeyFactory.createKey(dec));
         e.init(encrypt, publicKey);
         return e.processBlock(data,0, data.length);

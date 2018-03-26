@@ -279,10 +279,10 @@ public class Main extends Application {
         ArrayList<Reference> next = new ArrayList();
         for(int i=0; i<arr.length(); i++) {
             JSONObject o = arr.getJSONObject(i);
-            byte[] encref = o.getString("encryptedReference").getBytes(), catref;
+            byte[] catref, encref = o.getString("encryptedReference").getBytes();
             try {
                 catref = KeyProcessor.decrypt(Reference.priv, encref);
-                Reference ref = Reference.fromCatRef(catref);
+                Reference ref = Reference.fromCatRef(new String(catref));
                 ref.insertFileRow();
                 next.add(ref);
             } catch (Exception e) {
@@ -321,10 +321,10 @@ public class Main extends Application {
         dialog.setContentText("Public Key:");
         Optional<String> result = dialog.showAndWait();
         if(result.isPresent()){
-            byte[] cat = ref.toCatRef();
+            String cat = ref.toCatRef();
             String pubkey = result.get();  // recipient's public key
             try {
-                byte[] encrypted = KeyProcessor.encrypt(pubkey, cat);
+                byte[] encrypted = KeyProcessor.encrypt(pubkey, cat.getBytes());
                 hlapi.shareWithUser(UUID.randomUUID().toString(),new String(encrypted),pubkey);
             } catch (Exception e) {
                 e.printStackTrace();
