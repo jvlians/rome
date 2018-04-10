@@ -306,7 +306,7 @@ public class Main extends Application {
                 return;
             }
         }
-        sharedFiles.removeAll(sharedFiles);
+        sharedFiles.removeAll(new ArrayList(sharedFiles));
         sharedFiles.addAll(next);
     }
 
