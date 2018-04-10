@@ -22,6 +22,7 @@ public class Reference {
     private String hash;
     private String name;
     private static final int HASHLEN=46;
+    private static final int KEYLEN=32;
     private byte[] key;
     private boolean ours;
     static String pub, priv;
@@ -99,7 +100,7 @@ public class Reference {
     static int setFileRow(Integer id, String hash, String name, byte[] key, Integer ours) throws SQLException {
         PreparedStatement ps = id == null ? insert : update;
         if(hash != null) ps.setString(1, hash);
-        if(key != null) ps.setString(2, name);
+        if(name != null) ps.setString(2, name);
         if(key != null) ps.setBytes(3, key);
         if(ours != null) ps.setInt(4, ours);
         if(id == null) {
@@ -186,19 +187,21 @@ public class Reference {
     public String toCatRef() {
 
         byte[] hashb = hash.getBytes();
-        // byte[] fname = ref.getName();            // encrypted file's original filename
+        byte[] fname = name.getBytes();            // encrypted file's original filename
         byte[] cat = Bytes.concat(hashb, key);
+        cat = Bytes.concat(cat, fname);
         String enc = KeyProcessor.b64e(cat);
         return enc;
     }
     public static Reference fromCatRef(String enc) {
+
         byte[] cat = KeyProcessor.b64d(enc);
 
         byte[] hashb = Arrays.copyOfRange(cat, 0, HASHLEN);
-        byte[] key = Arrays.copyOfRange(cat, HASHLEN, cat.length);
+        byte[] key = Arrays.copyOfRange(cat, HASHLEN, HASHLEN+KEYLEN);
+        byte[] name = Arrays.copyOfRange(cat, HASHLEN+KEYLEN, cat.length);
 
-        //FIXME null
-        return new Reference(new String(hashb), null, key, false);
+        return new Reference(new String(hashb), new String(name), key, false);
     }
 
     public InputStream getData() throws IOException {
@@ -219,6 +222,10 @@ public class Reference {
     public Reference getPreviousVersion(){
         //Return null if does not exist
         return null;
+    }
+
+    public String getName() {
+        return name;
     }
 }
 class RefStream implements NamedStreamable {

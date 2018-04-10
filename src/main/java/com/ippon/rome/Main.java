@@ -49,7 +49,7 @@ public class Main extends Application {
         primaryStage.setWidth(800);
         primaryStage.setHeight(600);
 
-        myHashColumn = new TableColumn("Hash");
+        myHashColumn = new TableColumn("File");
         myHashColumn.setCellFactory(p ->
                 new TableCell<Reference, String>() {
                     TextField txt = new TextField();
@@ -59,7 +59,7 @@ public class Main extends Application {
                         super.updateItem(item, empty);
                         if(!empty) {
                             Reference ref = getTableView().getItems().get(getIndex());
-                            txt.setText(ref.getHash());
+                            txt.setText(ref.getName());
                             txt.setEditable(false);
                             txt.setFocusTraversable(false);
                             txt.setBackground(Background.EMPTY);
@@ -80,7 +80,7 @@ public class Main extends Application {
                         super.updateItem(item, empty);
                         if(!empty) {
                             Reference ref = getTableView().getItems().get(getIndex());
-                            txt.setText(ref.getHash());
+                            txt.setText(ref.getName());
                             txt.setEditable(false);
                             txt.setFocusTraversable(false);
                             txt.setBackground(Background.EMPTY);
