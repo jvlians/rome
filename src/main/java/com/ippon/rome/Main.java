@@ -221,7 +221,6 @@ public class Main extends Application {
         borderPane = new BorderPane();
 
 
-        VBox middlePane = new VBox();
         HBox bottomPane = new HBox(8);
         bottomPane.setAlignment(Pos.CENTER_LEFT);
 
@@ -259,8 +258,8 @@ public class Main extends Application {
             });
         });
 
-        middlePane.getChildren().addAll(sharedFileList,myFileList);
-        borderPane.setCenter(middlePane);
+        borderPane.setTop(sharedFileList);
+        borderPane.setCenter(myFileList);
 
         final Button refresh = new Button();
         refresh.setText("Refresh");
