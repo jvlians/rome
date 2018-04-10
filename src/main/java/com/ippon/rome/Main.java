@@ -9,10 +9,7 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
@@ -265,7 +262,15 @@ public class Main extends Application {
         middlePane.getChildren().addAll(sharedFileList,myFileList);
         borderPane.setCenter(middlePane);
 
-        bottomPane.getChildren().addAll(addFileButton, publicKeyText, publicKey);
+        final Button refresh = new Button();
+        refresh.setText("Refresh");
+        refresh.setOnAction(event -> loadShared());
+
+        final Pane spacer = new Pane();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+
+        bottomPane.getChildren().addAll(addFileButton, publicKeyText, publicKey, spacer, refresh);
+
         borderPane.setBottom(bottomPane);
 
         Scene scene = new Scene(borderPane);
@@ -303,7 +308,7 @@ public class Main extends Application {
                 return;
             }
         }
-        sharedFiles.removeAll();
+        sharedFiles.removeAll(sharedFiles);
         sharedFiles.addAll(next);
     }
 
