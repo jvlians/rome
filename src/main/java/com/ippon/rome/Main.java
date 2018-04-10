@@ -220,10 +220,8 @@ public class Main extends Application {
 
         borderPane = new BorderPane();
 
-        borderPane.setTop(sharedFileList);
-        borderPane.setCenter(myFileList);
 
-
+        VBox middlePane = new VBox();
         HBox bottomPane = new HBox(8);
         bottomPane.setAlignment(Pos.CENTER_LEFT);
 
@@ -261,6 +259,9 @@ public class Main extends Application {
             });
         });
 
+        middlePane.getChildren().addAll(sharedFileList,myFileList);
+        borderPane.setCenter(middlePane);
+
         final Button refresh = new Button();
         refresh.setText("Refresh");
         refresh.setOnAction(event -> loadShared());
@@ -269,6 +270,7 @@ public class Main extends Application {
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
         bottomPane.getChildren().addAll(addFileButton, publicKeyText, publicKey, spacer, refresh);
+
         borderPane.setBottom(bottomPane);
 
         Scene scene = new Scene(borderPane);
