@@ -20,6 +20,7 @@ public class Reference {
     static PreparedStatement delShared = null, getOurs = null;
     static PreparedStatement getid = null, gethash = null, index = null;
     private String hash;
+    private String name;
     private static final int HASHLEN=46;
     private byte[] key;
     private boolean ours;
@@ -168,6 +169,22 @@ public class Reference {
         MerkleNode mn = ipfs.add(nstream).get(0);
         this.hash = mn.hash.toBase58();
         this.key = dto.keyBytes;
+        setFileRow(null, this.hash, this.key, 1);
+    }
+
+    public Reference(BufferedInputStream file, String fileName) throws Exception {
+        EncryptionDTO dto = null;
+        try {
+            dto = FileProcessor.encrypt(file);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        RefStream nstream = new RefStream(dto.encrypted, UUID.randomUUID().toString());
+
+        MerkleNode mn = ipfs.add(nstream).get(0);
+        this.hash = mn.hash.toBase58();
+        this.key = dto.keyBytes;
+        this.name = fileName;
         setFileRow(null, this.hash, this.key, 1);
     }
 

@@ -235,7 +235,7 @@ public class Main extends Application {
             if(selectedFile != null) {
                 try {
                     BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream(selectedFile));
-                    myFiles.addAll(new Reference(inputStream));
+                    myFiles.addAll(new Reference(inputStream, selectedFile.getName()));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
