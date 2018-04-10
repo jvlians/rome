@@ -12,6 +12,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
@@ -222,10 +223,8 @@ public class Main extends Application {
 
         borderPane = new BorderPane();
 
-        borderPane.setTop(sharedFileList);
-        borderPane.setCenter(myFileList);
 
-
+        VBox middlePane = new VBox();
         HBox bottomPane = new HBox(8);
         bottomPane.setAlignment(Pos.CENTER_LEFT);
 
@@ -262,6 +261,9 @@ public class Main extends Application {
                 }
             });
         });
+
+        middlePane.getChildren().addAll(sharedFileList,myFileList);
+        borderPane.setCenter(middlePane);
 
         bottomPane.getChildren().addAll(addFileButton, publicKeyText, publicKey);
         borderPane.setBottom(bottomPane);
