@@ -160,22 +160,6 @@ public class Reference {
         this.ours = ours;
     }
 
-    public Reference(BufferedInputStream file) throws Exception {
-        EncryptionDTO dto = null;
-        try {
-            dto = FileProcessor.encrypt(file);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        RefStream nstream = new RefStream(dto.encrypted, UUID.randomUUID().toString());
-
-        MerkleNode mn = ipfs.add(nstream).get(0);
-        this.hash = mn.hash.toBase58();
-        this.key = dto.keyBytes;
-        //FIXME bufferedinputstream doesn't have name? remove?
-        setFileRow(null, this.hash, this.name, this.key, 1);
-    }
-
     public Reference(BufferedInputStream file, String fileName) throws Exception {
         EncryptionDTO dto = null;
         try {
