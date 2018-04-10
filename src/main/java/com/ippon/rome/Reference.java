@@ -39,11 +39,11 @@ public class Reference {
             //s.executeUpdate("drop table if exists profile");
             s.executeUpdate("create table if not exists files " +
                     "(id integer primary key autoincrement," +
-                    "hash text not null, key blob not null, ours integer)");
+                    "hash text not null, name text not null, key blob not null, ours integer)");
 
-            insert = conn.prepareStatement("insert into files values (null, ?, ?, ?);");
+            insert = conn.prepareStatement("insert into files values (null, ?, ?, ?, ?);");
             update = conn.prepareStatement("update files set " +
-                    "hash = ifnull(?, hash), key = ifnull(?, key), ours = ifnull(?, ours) " +
+                    "hash = ifnull(?, hash), name = ifnull(?, name), key = ifnull(?, key), ours = ifnull(?, ours) " +
                     "where id = ?;");
             delShared = conn.prepareStatement("delete from files where ours=0;");
             last = conn.prepareStatement("select last_insert_rowid();");
@@ -96,23 +96,24 @@ public class Reference {
             return null;
         }
     }
-    static int setFileRow(Integer id, String hash, byte[] key, Integer ours) throws SQLException {
+    static int setFileRow(Integer id, String hash, String name, byte[] key, Integer ours) throws SQLException {
         PreparedStatement ps = id == null ? insert : update;
         if(hash != null) ps.setString(1, hash);
-        if(key != null) ps.setBytes(2, key);
-        if(ours != null) ps.setInt(3, ours);
+        if(key != null) ps.setString(2, name);
+        if(key != null) ps.setBytes(3, key);
+        if(ours != null) ps.setInt(4, ours);
         if(id == null) {
             ps.executeUpdate();
             // TODO figure out how to insert+select locked
             return last.executeQuery().getInt(1);
         } else {
-            ps.setInt(4, id);
+            ps.setInt(5, id);
             ps.executeUpdate();
             return id;
         }
     }
     void insertFileRow() throws SQLException {
-        setFileRow(null, hash, key, ours?1:0);
+        setFileRow(null, hash, name, key, ours?1:0);
     }
     static Reference getFileRow(int id) throws SQLException {
         getid.setInt(1, id);
@@ -147,12 +148,14 @@ public class Reference {
     }
     private Reference(ResultSet set) throws SQLException {
         this(set.getString("hash"),
+                set.getString("name"),
                 set.getBytes("key"),
                 set.getInt("ours")!=0);
     }
 
-    public Reference(String hash, byte[] key, boolean ours){
+    public Reference(String hash, String name, byte[] key, boolean ours){
         this.hash = hash;
+        this.name = name;
         this.key = key;
         this.ours = ours;
     }
@@ -169,7 +172,8 @@ public class Reference {
         MerkleNode mn = ipfs.add(nstream).get(0);
         this.hash = mn.hash.toBase58();
         this.key = dto.keyBytes;
-        setFileRow(null, this.hash, this.key, 1);
+        //FIXME bufferedinputstream doesn't have name? remove?
+        setFileRow(null, this.hash, this.name, this.key, 1);
     }
 
     public Reference(BufferedInputStream file, String fileName) throws Exception {
@@ -185,7 +189,7 @@ public class Reference {
         this.hash = mn.hash.toBase58();
         this.key = dto.keyBytes;
         this.name = fileName;
-        setFileRow(null, this.hash, this.key, 1);
+        setFileRow(null, this.hash, this.name, this.key, 1);
     }
 
     public String getHash() {
@@ -209,7 +213,8 @@ public class Reference {
         byte[] hashb = Arrays.copyOfRange(cat, 0, HASHLEN);
         byte[] key = Arrays.copyOfRange(cat, HASHLEN, cat.length);
 
-        return new Reference(new String(hashb), key, false);
+        //FIXME null
+        return new Reference(new String(hashb), null, key, false);
     }
 
     public InputStream getData() throws IOException {
