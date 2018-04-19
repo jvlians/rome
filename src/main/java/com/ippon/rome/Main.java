@@ -25,6 +25,9 @@ import java.util.ArrayList;
 import java.util.Optional;
 import java.security.KeyPair;
 import java.util.UUID;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class Main extends Application {
 
@@ -39,6 +42,11 @@ public class Main extends Application {
     private TableView sharedFileList;
 
     private TableColumn myHashColumn, myDownloadColumn, myShareColumn, sharedHashColumn, sharedDownloadColumn, reshareColumn;
+
+    private Button refresh;
+
+    private final int refreshTime = 10;
+    private int refreshTimer = refreshTime;
 
     private static HyperLedgerApi hlapi = new HyperLedgerApi("http://184.172.247.54:31090");
 
@@ -263,9 +271,26 @@ public class Main extends Application {
         borderPane.setTop(sharedFileList);
         borderPane.setCenter(myFileList);
 
-        final Button refresh = new Button();
-        refresh.setText("Refresh");
+        Button refresh = new Button();
+        refresh.setText(String.format("Refresh (%d)",refreshTimer));
         refresh.setOnAction(event -> loadShared());
+
+        Runnable refreshTickRunnable = new Runnable() {
+            public void run() {
+                refreshTimer--;
+                if(refreshTimer < 0){
+                    refreshTimer = refreshTime;
+                } else if (refreshTime == 0) {
+                    loadShared();
+                }
+                Platform.runLater( new Runnable(){ @Override public void run() {
+                    refresh.setText(String.format("Refresh (%d)",refreshTimer));
+                }});
+            }
+        };
+
+        ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
+        executor.scheduleAtFixedRate(refreshTickRunnable, 0, 1, TimeUnit.SECONDS);
 
         final Pane spacer = new Pane();
         HBox.setHgrow(spacer, Priority.ALWAYS);
@@ -311,6 +336,7 @@ public class Main extends Application {
         }
         sharedFiles.removeAll(new ArrayList(sharedFiles));
         sharedFiles.addAll(next);
+        refreshTimer = 0;
     }
 
 
