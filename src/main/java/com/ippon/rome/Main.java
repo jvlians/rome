@@ -45,7 +45,7 @@ public class Main extends Application {
 
     private Button refresh;
 
-    private final int refreshTime = 1000;
+    private final int refreshTime = 60;
     private int refreshTimer = refreshTime;
 
     private static HyperLedgerApi hlapi = new HyperLedgerApi("http://184.172.247.54:31090");
