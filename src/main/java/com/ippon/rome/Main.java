@@ -106,6 +106,7 @@ public class Main extends Application {
                                 Reference ref = getTableView().getItems().get(getIndex());
                                 FileChooser fileChooser = new FileChooser();
                                 fileChooser.setTitle("Choose Decrypted File Location");
+                                fileChooser.setInitialFileName(ref.getName());
                                 File targetFile = fileChooser.showSaveDialog(primaryStage);
                                 if(targetFile != null){
                                     try {
@@ -143,6 +144,7 @@ public class Main extends Application {
                                 Reference ref = getTableView().getItems().get(getIndex());
                                 FileChooser fileChooser = new FileChooser();
                                 fileChooser.setTitle("Choose Decrypted File Location");
+                                fileChooser.setInitialFileName(ref.getName());
                                 File targetFile = fileChooser.showSaveDialog(primaryStage);
                                 if(targetFile != null){
                                     try {
