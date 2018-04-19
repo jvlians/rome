@@ -278,14 +278,16 @@ public class Main extends Application {
         Runnable refreshTickRunnable = new Runnable() {
             public void run() {
                 refreshTimer--;
-                if(refreshTimer < 0){
-                    refreshTimer = refreshTime;
-                } else if (refreshTime == 0) {
+                if (refreshTimer == -1) {
                     loadShared();
                 }
-                Platform.runLater( new Runnable(){ @Override public void run() {
-                    refresh.setText(String.format("Refresh (%d)",refreshTimer));
-                }});
+                if(refreshTimer >= 0){
+                    Platform.runLater( new Runnable(){ @Override public void run() {
+                        int timerValue = refreshTimer;
+                        if(timerValue < 0) timerValue = 0;
+                        refresh.setText(String.format("Refresh (%d)",timerValue));
+                    }});
+                }
             }
         };
 
@@ -306,6 +308,7 @@ public class Main extends Application {
 
     }
     public void loadShared() {
+        refreshTimer = -2;
         JsonNode node = null;
         try {
             node = hlapi.getFilesSharedWithUser(Reference.pub);
@@ -336,7 +339,7 @@ public class Main extends Application {
         }
         sharedFiles.removeAll(new ArrayList(sharedFiles));
         sharedFiles.addAll(next);
-        refreshTimer = 0;
+        refreshTimer = refreshTime;
     }
 
 
