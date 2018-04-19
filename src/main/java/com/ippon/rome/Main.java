@@ -45,7 +45,7 @@ public class Main extends Application {
 
     private Button refresh;
 
-    private final int refreshTime = 10;
+    private final int refreshTime = 1000;
     private int refreshTimer = refreshTime;
 
     private static HyperLedgerApi hlapi = new HyperLedgerApi("http://184.172.247.54:31090");
@@ -243,6 +243,7 @@ public class Main extends Application {
                 try {
                     BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream(selectedFile));
                     myFiles.addAll(new Reference(inputStream, selectedFile.getName()));
+                    myFileList.refresh();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -339,6 +340,7 @@ public class Main extends Application {
         }
         sharedFiles.removeAll(new ArrayList(sharedFiles));
         sharedFiles.addAll(next);
+        if(sharedFileList != null) sharedFileList.refresh();
         refreshTimer = refreshTime;
     }
 
